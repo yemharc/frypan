@@ -3,7 +3,6 @@ import numpy as np
 import glob
 import os
 
-# custom columns
 from Frypan_Controllers import idx_list
 
 # devprep type : shaft, assm, eol
