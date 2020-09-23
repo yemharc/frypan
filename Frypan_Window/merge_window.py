@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter.filedialog as fdig
 
 from Frypan_Controllers import window_control
 
@@ -17,7 +18,8 @@ class MergeWindow:
         _fm_btn.pack(fill="x")
         _btn_ins_file = tk.Button(_fm_btn,
                                   width=30,
-                                  text="파일 추가")
+                                  text="파일 추가",
+                                  command=self.add_file)
         _btn_ins_file.pack(side="left")
         
         _btn_del_file = tk.Button(_fm_btn,
@@ -74,3 +76,11 @@ class MergeWindow:
         _pgbar_value = tk.DoubleVar()
         _pgbar = ttk.Progressbar(_frm_progress, maximum=100, variable=_pgbar_value)
         _pgbar.pack(fill="x")
+        
+    def add_file(self):
+        _files = fdig.askopenfilenames(title="파일을 선택하세요",
+                                       filetypes=(("CSV", "*.csv"), ("Excel", "*.xlsx")),
+                                       initialdir="C:/")
+    
+    def del_file(self):
+        pass
