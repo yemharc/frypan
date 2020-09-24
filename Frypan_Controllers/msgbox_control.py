@@ -8,7 +8,7 @@ class PopUp:
         self.text = None
         
     def __del__(self):
-        print("delete instance")
+        print("delete instance : ", __name__)
         
     def get_res(self):
         return print(self.res)

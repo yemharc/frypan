@@ -10,50 +10,42 @@ import Frypan_Controllers.data_control as data_control
 
 import Frypan_Window.merge_window as merge_window
 
-# MAIN WINDOW START
-window = tk.Tk()
-window.title("프라이팬")
-window_control.CenterScreen(window, 800, 600)
-window.minsize(800, 600)
-
-def_font = tkfont.nametofont(("TkDefaultFont"))
-def_font.config(size=9)
-
-window_style = ttk.Style(window)
-window_style.theme_use("default")
-window_style.configure("Tab", focuscolor=window_style.configure(".")["background"])
-
+# # MAIN WINDOW START
+root = tk.Tk()
+root.title("프라이팬")
+window_control.CenterScreen(root, 800, 600)
 # window.config(menu=menu_control.BasicWindowMenu(window))
-# MAIN WINDOW END
+# # MAIN WINDOW END
 
-# TAB WINDOW START
+# # TAB WINDOW START
 notebook = ttk.Notebook(
-    window,
-    width=window_control.GetScreenSize(window, "ws"),
-    height=window_control.GetScreenSize(window, "hs"),
+    root,
+    width=window_control.GetScreenSize(root, "ws"),
+    height=window_control.GetScreenSize(root, "hs"),
     takefocus=True)
 notebook.enable_traversal()
 notebook.pack()
-# TAB WINDOW END
+# # TAB WINDOW END
 
-w_merge = merge_window.MergeWindow(window, notebook)
+w_merge = merge_window.MergeWindow(root, notebook)
 
-frame2 = tk.Frame(window)
+frame2 = tk.Frame(root)
 notebook.add(frame2, text="데이터 매칭")
 label2 = tk.Label(frame2, text="개발중")
 label2.pack()
 
-frame3 = tk.Frame(window)
+frame3 = tk.Frame(root)
 notebook.add(frame3, text="데이터 분석")
 label3 = tk.Label(frame3, text="개발중")
 label3.pack()
 
-# df = data_control.get_data()
-# print(df)
-# popup = msgbox_control.PopUp()
+# # df = data_control.get_data()
+# # print(df)
+# # popup = msgbox_control.PopUp()
 
-# Button(window, command=lambda : popup.yes_no_cancel("test111", "test222"), text="test").pack()
-# Button(window, command=popup.get_res, text="Get Res").pack()
+# # Button(window, command=lambda : popup.yes_no_cancel("test111", "test222"), text="test").pack()
+# # Button(window, command=popup.get_res, text="Get Res").pack()
 
 # Start window
-window.mainloop()
+if __name__ == "__main__":
+    root.mainloop()

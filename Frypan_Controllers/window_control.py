@@ -1,10 +1,20 @@
 import tkinter as tk
+import tkinter.ttk as ttk
+import tkinter.font as tkfont
 import tkinter.filedialog as fdig
 
-def CenterScreen(win, w_width, w_height):
-    s_width = (GetScreenSize(win, "ws") // 2) - (w_width // 2)
-    s_height = (GetScreenSize(win, "hs") // 2) - (w_height // 2)
-    win.geometry('{}x{}+{}+{}'.format(w_width, w_height, s_width, s_height))
+def CenterScreen(window, w_width, w_height):
+    s_width = (GetScreenSize(window, "ws") // 2) - (w_width // 2)
+    s_height = (GetScreenSize(window, "hs") // 2) - (w_height // 2)
+    window.geometry('{}x{}+{}+{}'.format(w_width, w_height, s_width, s_height))
+    
+    window.minsize(w_width, w_height)
+    def_font = tkfont.nametofont(("TkDefaultFont"))
+    def_font.config(size=9)
+    
+    window_style = ttk.Style(window)
+    # window_style.theme_use("default")
+    window_style.configure("Tab", focuscolor=window_style.configure(".")["background"])
     
 def GetScreenSize(window, axis):
     if axis == 'ws':
@@ -15,12 +25,3 @@ def GetScreenSize(window, axis):
         return window.winfo_reqwidth()
     elif axis == 'h':
         return window.winfo_reqheight()
-
-def SetPadding(frame, x, y):
-    for child in frame.winfo_children():
-        child.config(padx=x, pady=y)
-
-def AddFiles():
-    return (fdig.askopenfilenames(title="파일을 선택하세요",
-                                       filetypes=(("CSV", "*.csv"), ("Excel", "*.xlsx")),
-                                       initialdir=r"C:\dev"))
