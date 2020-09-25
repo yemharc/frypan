@@ -1,21 +1,14 @@
 import tkinter as tk
 import tkinter.filedialog as fdig
 
+import os
 import pandas as pd
 import chardet
-
-# import numpy as np
-# import glob
-# import os
-
 # from Frypan_Controllers import idx_list
 
 class DataMgr:
     def __init__(self):
-        self._ftypes = [("Data Files (csv, xlsx, xls)", ("*.csv","*.xlsx","*.xls")),
-           ("CSV","*.csv"),
-           ("Excel",("*.xlsx","*.xls")),
-            ("All Files","*.*")]
+        self._ftypes = [("CSV","*.csv"), ("Excel",("*.xlsx","*.xls")),("Text","*.txt")]
         
     def __del__(self):
         print("delete instance : ", __name__)
@@ -26,16 +19,23 @@ class DataMgr:
     def GetDir(self):
         return fdig.askdirectory(title="폴더를 선택하세요", initialdir=r"c:/dev")
     
-    def Merge(self, df, lists):
-        df = pd.DataFrame()
-        
+    def Merge(self, lists):
         for f in lists:
-            with open(f, 'rb') as encode:
-                encoding = chardet.detect(encode.read(1024)).get('encoding')
-                merge = (pd.read_csv(f, encoding=encoding) for f in lists)
-        
-        df = pd.concat(merge, ignore_index=True)
-        print(df)
+            with open(f, 'rb') as _file:
+                execute = os.path.splitext(f)[1]
+                encoding = chardet.detect(_file.read(1024)).get('encoding')
+                print(encoding)
+                
+                if execute == ".csv":
+                    df_tmp = (pd.read_csv(f, encoding=encoding) for f in lists)
+                elif execute == ".xlsx" or execute == ".xls":
+                    print("excel")
+                    df_tmp = (pd.read_excel(f, sheet_name=0) for f in lists)
+                elif execute == ".txt":
+                    df_tmp = (pd.read_csv(f, encoding=encoding, sep="\s+") for f in lists)
+                else:
+                    pass
+        return (pd.concat(df_tmp, ignore_index=True))
 
 # # INDEX formatting start
 # def get_data():

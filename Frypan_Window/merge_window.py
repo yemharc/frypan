@@ -115,7 +115,8 @@ class MergeWindow:
     def start_merge(self):
         dm = data_control.DataMgr()
         list_to_files = self._lb_listbox.get(0, tk.END)
-        self.df_merge = dm.Merge(self.df_merge, list_to_files)
+        self.df_merge = dm.Merge(list_to_files)
+        print(self.df_merge)
         
     def preview(self):
         return preview_window.Preview(self.root, "merge_opts", "데이터 선택", 640, 480)
