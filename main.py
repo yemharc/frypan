@@ -7,7 +7,6 @@ import Frypan_Controllers.window_control as window_control
 import Frypan_Controllers.menu_control as menu_control
 import Frypan_Controllers.msgbox_control as msgbox_control
 import Frypan_Controllers.data_control as data_control
-
 import Frypan_Window.merge_window as merge_window
 
 # # MAIN WINDOW START

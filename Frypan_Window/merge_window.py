@@ -2,12 +2,14 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog as fdig
 
+import threading
 import pandas as pd
 
 from Frypan_Controllers import window_control
 from Frypan_Controllers import data_control
 from Frypan_Controllers import msgbox_control
 from Frypan_Controllers import preview_window
+from Frypan_Controllers import progress_control
 
 class MergeWindow:
     def __init__(self, window, notebook):
@@ -32,9 +34,12 @@ class MergeWindow:
         self._btn_opts_preview = tk.Button(_fm_btn, text="미리보기", width=20, command=self.preview)
         self._btn_opts_preview.pack(side="left")
         
-        self._btn_merge_file = tk.Button(_fm_btn, width=20, text="파일 합치기", command=self.start_merge)
+        self._btn_merge_file = tk.Button(_fm_btn, width=20, text="파일 합치기", command=lambda:threading.Thread(target=self.start_merge).start())
         self._btn_merge_file.config(state=tk.DISABLED)
         self._btn_merge_file.pack(side="right")
+        
+        self._pgbar = progress_control.Progress(_fm_btn, "right", "x")
+        self._pgbar.clear()
         
         # File listbox & scrollbar
         _lfm_list = tk.LabelFrame(self.frm_merge, text="파일목록", padx=self.padx, pady=self.pady)
@@ -71,14 +76,6 @@ class MergeWindow:
         _cmb_opts_col_cnt.current(0)
         # _cmb_opts_col_cnt.bind("<<ComboboxSelected>>", self.cmb_value(_cmb_opts_col_cnt.get()))
         
-        # Progress bar
-        _lfm_progress = tk.LabelFrame(self.frm_merge, text="진행상황", padx=self.padx, pady=self.pady)
-        _lfm_progress.pack(fill="x", ipadx=self.ipadx, ipady=self.ipady)
-        
-        _pgbar_value = tk.DoubleVar()
-        _pgbar = ttk.Progressbar(_lfm_progress, maximum=100, variable=_pgbar_value)
-        _pgbar.pack(fill="x")
-
     def add_files(self):
         dm = data_control.DataMgr()
         _files = dm.AddFiles()
@@ -113,10 +110,20 @@ class MergeWindow:
         self._entry_dest_path.config(state="readonly")
 
     def start_merge(self):
+        self._pgbar.start()
         dm = data_control.DataMgr()
         list_to_files = self._lb_listbox.get(0, tk.END)
-        self.df_merge = dm.Merge(list_to_files)
-        print(self.df_merge)
-        
+        pop = msgbox_control.PopUp()
+        try:
+            self.df_merge = dm.Merge(self.df_merge, list_to_files)
+            print(self.df_merge)
+            self._pgbar.complete()
+            pop.info("파일 합치기", "작업완료")
+        except:
+            pop.error("파일 합치기", "실패!")
+            
+        if pop.get_res():
+            self._pgbar.clear()
+            
     def preview(self):
-        return preview_window.Preview(self.root, "merge_opts", "데이터 선택", 640, 480)
+        return preview_window.Preview(self.root, "merge_opts", "미리보기", 640, 480, self.df_merge)

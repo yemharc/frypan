@@ -11,16 +11,18 @@ class PopUp:
         print("delete instance : ", __name__)
         
     def get_res(self):
-        return print(self.res)
+        return self.res
 
     def info(self, title, text):
-        self.res = msgbox.showinfo(title, text)
+        msgbox.showinfo(title, text)
+        self.res = 1
         
     def warning(self, title, text):
         self.res = msgbox.showwarning(title, text)
 
     def error(self, title, text):
-        self.res = msgbox.showerror(title, text)
+        msgbox.showerror(title, text)
+        self.res = 1
 
     def yes_no(self, title, text):
         self.res = msgbox.askyesno(title, text)

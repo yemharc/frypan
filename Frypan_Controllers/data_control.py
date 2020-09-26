@@ -19,23 +19,25 @@ class DataMgr:
     def GetDir(self):
         return fdig.askdirectory(title="폴더를 선택하세요", initialdir=r"c:/dev")
     
-    def Merge(self, lists):
+    def Merge(self, df, lists):
+        df = pd.DataFrame(data=None)
+        
         for f in lists:
             with open(f, 'rb') as _file:
                 execute = os.path.splitext(f)[1]
                 encoding = chardet.detect(_file.read(1024)).get('encoding')
-                print(encoding)
                 
                 if execute == ".csv":
-                    df_tmp = (pd.read_csv(f, encoding=encoding) for f in lists)
+                    df = (pd.read_csv(f, encoding=encoding) for f in lists)
                 elif execute == ".xlsx" or execute == ".xls":
                     print("excel")
-                    df_tmp = (pd.read_excel(f, sheet_name=0) for f in lists)
+                    df = (pd.read_excel(f, sheet_name=0) for f in lists)
                 elif execute == ".txt":
-                    df_tmp = (pd.read_csv(f, encoding=encoding, sep="\s+") for f in lists)
+                    df = (pd.read_csv(f, encoding=encoding, sep="\s+") for f in lists)
                 else:
                     pass
-        return (pd.concat(df_tmp, ignore_index=True))
+                
+        return (pd.concat(df, ignore_index=True))
 
 # # INDEX formatting start
 # def get_data():
