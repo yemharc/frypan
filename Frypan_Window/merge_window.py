@@ -2,14 +2,15 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog as fdig
 
+import os
 import threading
 import pandas as pd
 
 from Frypan_Controllers import window_control
 from Frypan_Controllers import data_control
 from Frypan_Controllers import msgbox_control
-from Frypan_Controllers import preview_window
 from Frypan_Controllers import progress_control
+from Frypan_Window import preview_window
 
 class MergeWindow:
     def __init__(self, window, notebook):
@@ -62,7 +63,7 @@ class MergeWindow:
         self._entry_dest_path = tk.Entry(_lfm_dest_path, text="폴더 선택", state="readonly")
         self._entry_dest_path.pack(side="left", fill="x", expand=True)
         
-        _btn_dest_path = tk.Button(_lfm_dest_path, text="찾아보기", width=10, command=self.save_files)
+        _btn_dest_path = tk.Button(_lfm_dest_path, text="찾아보기", width=10, command=self.dest_files)
         _btn_dest_path.pack(side="right")
         
         # Options
@@ -70,11 +71,22 @@ class MergeWindow:
         _lfm_opts.pack(fill="x", ipadx=self.ipadx, ipady=self.ipady)
         
         _l_opts_col_cnt = tk.Label(_lfm_opts, text="헤더 행")
-        _l_opts_col_cnt.grid(column=0, row=0)
+        _l_opts_col_cnt.grid(column=0, row=0, padx=self.padx, pady=self.pady)
         _cmb_opts_col_cnt = ttk.Combobox(_lfm_opts, state="readonly", justify="center", width=6, values=(1,2,3,4,5))
-        _cmb_opts_col_cnt.grid(column=0, row=1)
+        _cmb_opts_col_cnt.grid(column=0, row=1, padx=self.padx, pady=self.pady)
         _cmb_opts_col_cnt.current(0)
-        # _cmb_opts_col_cnt.bind("<<ComboboxSelected>>", self.cmb_value(_cmb_opts_col_cnt.get()))
+        
+        _l_opts_filename = tk.Label(_lfm_opts, text="파일명")
+        _l_opts_filename.grid(column=1, row=0, padx=self.padx, pady=self.pady)
+        self._entry_opts_filename = tk.Entry(_lfm_opts, width=20)
+        self._entry_opts_filename.insert(0, "out")
+        self._entry_opts_filename.grid(column=1, row=1, padx=self.padx, pady=self.pady)
+        
+        # Save & Next
+        _fm_save_next = tk.Frame(self.frm_merge, padx=self.padx, pady=self.pady)
+        _fm_save_next.pack(fill="x", ipadx=self.ipadx, ipady=self.ipady)
+        self._btn_save_next = tk.Button(_fm_save_next, text="저장하기", width=20, command=self.save_files)
+        self._btn_save_next.pack(side="right")
         
     def add_files(self):
         dm = data_control.DataMgr()
@@ -88,16 +100,17 @@ class MergeWindow:
         if self._lb_listbox.size() > 0:
             self._btn_merge_file.config(state=tk.NORMAL)
 
-
     def del_files(self):
         for index in reversed(self._lb_listbox.curselection()):
             self._lb_listbox.delete(index)
+            
         self._lb_listbox.selection_set(tk.END)
+        self.df_merge = pd.DataFrame(data=None)
         
         if self._lb_listbox.size() == 0:
             self._btn_merge_file.config(state=tk.DISABLED)
 
-    def save_files(self):
+    def dest_files(self):
         dm = data_control.DataMgr()
         _dest_dir = dm.GetDir()
         
@@ -109,11 +122,32 @@ class MergeWindow:
         self._entry_dest_path.insert(0, _dest_dir)
         self._entry_dest_path.config(state="readonly")
 
+    def save_files(self):
+        pop = msgbox_control.PopUp()
+        
+        if self.df_merge.size == 0:
+            pop.warning("파일 저장", "저장할 데이터가 없습니다")
+        elif len(str(self._entry_dest_path.get())) == 0:
+            pop.warning("파일 저장", "저장할 경로를 선택하세요")
+        else:
+            dest = str(self._entry_dest_path.get()) + "/" + self._entry_opts_filename.get() + ".csv"
+            print(dest)
+            if os.path.isfile(dest):
+                pop.yes_no("파일 저장", "파일을 덮어쓸까요?")
+                if pop.get_res():
+                    self.df_merge.to_csv(dest, sep=",", encoding="utf-8-sig")
+                    pop.info("파일 저장", "파일을 덮어썼습니다")
+                else:
+                    pop.warning("파일 저장", "파일명을 변경하세요")
+            else:
+                self.df_merge.to_csv(dest, sep=",", encoding="utf-8-sig")
+                pop.info("파일 저장", "파일을 저장했습니다")
+
     def start_merge(self):
         self._pgbar.start()
         dm = data_control.DataMgr()
-        list_to_files = self._lb_listbox.get(0, tk.END)
         pop = msgbox_control.PopUp()
+        list_to_files = self._lb_listbox.get(0, tk.END)
         try:
             self.df_merge = dm.Merge(self.df_merge, list_to_files)
             print(self.df_merge)
