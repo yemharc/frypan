@@ -1,30 +1,57 @@
-from tkinter import *
+import tkinter as tk
+import tkinter.ttk as ttk
 
-def BasicWindowMenu(win):
-    menu = Menu(win)
+import os
+
+from Frypan_Window import preview_window
+from Frypan_Controllers import window_control
+
+def BasicWindowMenu(window):
+    menu = tk.Menu(window)
+    menu_info = tk.Menu(menu, tearoff=0)
+    menu_info.add_command(label="라이센스", command=lambda:LicenseWindow(window))
+    menu_info.add_command(label="프로그램", command=lambda:ProgramInfo(window))
+    menu.add_cascade(label="정보", menu=menu_info)
     
-    # File
-    menu_file = Menu(menu, tearoff=0)
-    menu_file.add_command(label="파일")
-    menu_file.add_command(label="123")
-    menu_file.add_separator()
-    menu_file.add_command(label="Save All", state="disable")
-    menu_file.add_separator()
-    menu_file.add_command(label="Exit", command=win.quit)
-    menu.add_cascade(label="File", menu=menu_file)
+    return menu
+
+def LicenseWindow(window):
+    license_window = tk.Toplevel(window, name="license")
+    license_window.title("라이센스")
+    window_control.CenterScreen(license_window,
+                                window_control.GetScreenSize(license_window, "ws")//3,
+                                window_control.GetScreenSize(license_window, "hs")//3)
+    license_window.resizable(False, False)
     
-    # Edit
-    menu_edit = Menu(menu, tearoff=0)
-    menu_edit.add_radiobutton(label="test1")
-    menu_edit.add_radiobutton(label="test2")
-    menu_edit.add_radiobutton(label="test3")
-    menu.add_cascade(label="Edit", menu=menu_edit)
+    _fm_license = tk.Frame(license_window)
+    _fm_license.pack(fill="both", expand=True)
     
-    # View
-    menu_view = Menu(menu, tearoff=0)
-    menu_view.add_checkbutton(label="Show1")
-    menu_view.add_checkbutton(label="Show2")
-    menu_view.add_checkbutton(label="Show3")
-    menu.add_cascade(label="View", menu=menu_view)
+    _txtfile = open(os.path.abspath(".") + "/LICENSE", "r")
+    _txt = _txtfile.read()
+    _txtfile.close()
     
-    return (menu)
+    _txt_license = tk.Text(_fm_license)
+    _txt_license.insert(1.0, _txt)
+    _txt_license.config(state=tk.DISABLED)
+    _txt_license.pack(fill="both", expand=True)
+    
+    
+def ProgramInfo(window):
+    proginfo_window = tk.Toplevel(window, name="proginfo")
+    proginfo_window.title("프로그램 정보")
+    window_control.CenterScreen(proginfo_window,
+                                window_control.GetScreenSize(proginfo_window, "ws")//3,
+                                window_control.GetScreenSize(proginfo_window, "hs")//3)
+    proginfo_window.resizable(False, False)
+    
+    _fm_proginfo = tk.Frame(proginfo_window)
+    _fm_proginfo.pack(fill="both", expand=True)
+    
+    _txtfile = open(os.path.abspath(".") + "/INFO", "r")
+    _txt = _txtfile.read()
+    _txtfile.close()
+    
+    _txt_proginfo = tk.Text(_fm_proginfo)
+    _txt_proginfo.insert(1.0, _txt)
+    _txt_proginfo.config(state=tk.DISABLED)
+    _txt_proginfo.pack(fill="both", expand=True)

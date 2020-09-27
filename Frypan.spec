@@ -8,6 +8,8 @@ block_cipher = None
 added_files = [
     ('C:\\dev\\repo\\frypan\\Frypan_Controllers','Frypan_Controllers'),
     ('C:\\dev\\repo\\frypan\\Frypan_Window','Frypan_Window'),
+    ('C:\\dev\\repo\\frypan\\LICENSE','.'),
+    ('C:\\dev\\repo\\frypan\\INFO','.'),
 ]
 
 a = Analysis(['Frypan.py'],
@@ -50,7 +52,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=True )
+          console=False )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

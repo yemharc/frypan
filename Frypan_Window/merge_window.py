@@ -47,7 +47,7 @@ class MergeWindow:
         _lfm_list.pack(fill="x", ipadx=self.ipadx, ipady=self.ipady)
         _sc_list_scrollbar = tk.Scrollbar(_lfm_list)
         _sc_list_scrollbar.pack(side="right", fill="y")
-        _sc_list_scrollbar.pack()
+        # _sc_list_scrollbar.pack()
 
         self._lb_listbox = tk.Listbox(_lfm_list,
                                         selectmod="extended",
