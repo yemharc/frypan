@@ -19,6 +19,7 @@ class MergeWindow:
         self.padx = self.pady = self.ipadx = self.ipady = self.padding
         
         self.df_merge = pd.DataFrame()
+        self.df_header = []
         
         self.frm_merge = tk.Frame(window, padx=self.padx, pady=self.pady)
         notebook.add(self.frm_merge, text="파일 합치기")
@@ -70,17 +71,18 @@ class MergeWindow:
         _lfm_opts = tk.LabelFrame(self.frm_merge, text="옵션", padx=self.padx, pady=self.pady)
         _lfm_opts.pack(fill="x", ipadx=self.ipadx, ipady=self.ipady)
         
-        _l_opts_col_cnt = tk.Label(_lfm_opts, text="헤더 행")
-        _l_opts_col_cnt.grid(column=0, row=0, padx=self.padx, pady=self.pady)
-        _cmb_opts_col_cnt = ttk.Combobox(_lfm_opts, state="readonly", justify="center", width=6, values=(1,2,3,4,5))
-        _cmb_opts_col_cnt.grid(column=0, row=1, padx=self.padx, pady=self.pady)
-        _cmb_opts_col_cnt.current(0)
-        
+        # Options - save file name
         _l_opts_filename = tk.Label(_lfm_opts, text="파일명")
-        _l_opts_filename.grid(column=1, row=0, padx=self.padx, pady=self.pady)
-        self._entry_opts_filename = tk.Entry(_lfm_opts, width=20)
+        _l_opts_filename.grid(column=0, row=0, padx=self.padx, pady=self.pady)
+        self._entry_opts_filename = tk.Entry(_lfm_opts, width=10, justify="center")
         self._entry_opts_filename.insert(0, "out")
-        self._entry_opts_filename.grid(column=1, row=1, padx=self.padx, pady=self.pady)
+        self._entry_opts_filename.grid(column=0, row=1, padx=self.padx, pady=self.pady)
+        
+        # Options - select DataFrame header
+        _l_opts_df_header = tk.Label(_lfm_opts, text="컬럼 선택")
+        _l_opts_df_header.grid(column=1, row=0, padx=self.padx, pady=self.pady)
+        _btn_opts_df_header = ttk.Button(_lfm_opts, text="선택하기", width=10, command=self.select_header)
+        _btn_opts_df_header.grid(column=1, row=1, padx=self.padx, pady=self.pady)
         
         # Save & Next
         _fm_save_next = tk.Frame(self.frm_merge, padx=self.padx, pady=self.pady)
@@ -131,7 +133,6 @@ class MergeWindow:
             pop.warning("파일 저장", "저장할 경로를 선택하세요")
         else:
             dest = str(self._entry_dest_path.get()) + "/" + self._entry_opts_filename.get() + ".csv"
-            print(dest)
             if os.path.isfile(dest):
                 pop.yes_no("파일 저장", "파일을 덮어쓸까요?")
                 if pop.get_res():
@@ -139,9 +140,15 @@ class MergeWindow:
                     pop.info("파일 저장", "파일을 덮어썼습니다")
                 else:
                     pop.warning("파일 저장", "파일명을 변경하세요")
+                    self._entry_opts_filename.focus_set()
             else:
                 self.df_merge.to_csv(dest, sep=",", encoding="utf-8-sig")
                 pop.info("파일 저장", "파일을 저장했습니다")
+                
+    def select_header(self):
+        header = list(self.df_merge.columns)
+        preview = preview_window.Preview(self.root, "merge_opts", "헤더 선택", 640, 480)
+        preview.df_select_header(header)
 
     def start_merge(self):
         self._pgbar.start()
@@ -160,4 +167,6 @@ class MergeWindow:
             self._pgbar.clear()
             
     def preview(self):
-        return preview_window.Preview(self.root, "merge_opts", "미리보기", 640, 480, self.df_merge)
+        preview = preview_window.Preview(self.root, "merge_opts", "미리보기", 640, 480)
+        preview.df_preview(self.df_merge)
+        print(self.df_header)

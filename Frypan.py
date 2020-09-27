@@ -35,13 +35,5 @@ notebook.add(frame3, text="데이터 분석")
 label3 = tk.Label(frame3, text="개발중")
 label3.pack()
 
-# # df = data_control.get_data()
-# # print(df)
-# # popup = msgbox_control.PopUp()
-
-# # Button(window, command=lambda : popup.yes_no_cancel("test111", "test222"), text="test").pack()
-# # Button(window, command=popup.get_res, text="Get Res").pack()
-
-# Start window
 if __name__ == "__main__":
     root.mainloop()
