@@ -1,4 +1,4 @@
-import tkinter.messagebox as msgbox
+import tkinter.messagebox as popup
 import tkinter.filedialog as fd
 
 class PopUp:
@@ -14,30 +14,30 @@ class PopUp:
         return self.res
 
     def info(self, title, text):
-        msgbox.showinfo(title, text)
+        popup.showinfo(title, text)
         self.res = 1
         
     def warning(self, title, text):
-        self.res = msgbox.showwarning(title, text)
+        self.res = popup.showwarning(title, text)
 
     def error(self, title, text):
-        msgbox.showerror(title, text)
+        popup.showerror(title, text)
         self.res = 1
 
     def yes_no(self, title, text):
-        self.res = msgbox.askyesno(title, text)
+        self.res = popup.askyesno(title, text)
 
     def yes_no_cancel(self, title, text):
-        self.res = msgbox.askyesnocancel(title, text)
+        self.res = popup.askyesnocancel(title, text)
 
     def selection(self, title, text):
-        self.res = msgbox.askokcancel(title, text)
+        self.res = popup.askokcancel(title, text)
 
     def retry(self, title, text):
-        self.res = msgbox.askretrycancel(title, text)
+        self.res = popup.askretrycancel(title, text)
 
-    def open_file(self):
-        file = fd.askopenfilename()
-        txt = file.read()
-        print(type(txt))
-        file.close()
+    # def open_file(self):
+    #     file = fd.askopenfilename()
+    #     txt = file.read()
+    #     print(type(txt))
+    #     file.close()

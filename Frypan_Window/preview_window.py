@@ -5,6 +5,7 @@ import pandas as pd
 from pandastable import Table as pt
 
 from Frypan_Controllers import window_control
+
 from Frypan_Window import merge_window
 
 class Preview:
@@ -29,14 +30,14 @@ class Preview:
     def df_select_header(self, header):
         self._pv_df_header = header
         _lfm_df_select = tk.LabelFrame(self.window, text="데이터를 선택하세요")
-        _lfm_df_select.pack(fill="both", ipadx=4, ipady=4)
+        _lfm_df_select.pack(fill=tk.BOTH, ipadx=4, ipady=4)
         
         _btn_df_select = tk.Button(_lfm_df_select, text="전체선택", command=lambda:self.df_select_header_all(1))
-        _btn_df_select.pack(side="left")
+        _btn_df_select.pack(side=tk.LEFT)
         _btn_df_select = tk.Button(_lfm_df_select, text="전체해제", command=lambda:self.df_select_header_all(0))
-        _btn_df_select.pack(side="left")
+        _btn_df_select.pack(side=tk.LEFT)
         _btn_df_select = tk.Button(_lfm_df_select, text="선택완료", command=self.quit)
-        _btn_df_select.pack(side="left")
+        _btn_df_select.pack(side=tk.LEFT)
         
         _df_select_cv = tk.Canvas(self.window)
         sc = tk.Scrollbar(self.window, orient=tk.VERTICAL, command=_df_select_cv.yview)

@@ -21,7 +21,7 @@ def GetScreenSize(window, axis):
         return window.winfo_screenwidth()
     elif axis == 'hs':
         return window.winfo_screenheight()
-    elif axis == 'w':
+    elif axis == 'wr':
         return window.winfo_reqwidth()
-    elif axis == 'h':
+    elif axis == 'hr':
         return window.winfo_reqheight()
