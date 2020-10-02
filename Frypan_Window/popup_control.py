@@ -35,9 +35,3 @@ class PopUp:
 
     def retry(self, title, text):
         self.res = popup.askretrycancel(title, text)
-
-    # def open_file(self):
-    #     file = fd.askopenfilename()
-    #     txt = file.read()
-    #     print(type(txt))
-    #     file.close()

@@ -19,7 +19,8 @@ class FrypanMain:
             self.root,
             width=window_control.GetScreenSize(self.root, "ws"),
             height=window_control.GetScreenSize(self.root, "hs"),
-            takefocus=True)
+            takefocus=True
+        )
         notebook.enable_traversal()
         notebook.pack()
         

@@ -15,18 +15,22 @@ class DataMgr:
         
     def AddFiles(self):
         return fdig.askopenfilenames(title="파일을 선택하세요", filetypes=self._ftypes, initialdir=r"c:/dev")
+    
+    def AddFile(self):
+        return fdig.askopenfilename(title="파일을 선택하세요", filetype=self._ftypes, initialdir=r"c:/dev")
 
     def GetDir(self):
         return fdig.askdirectory(title="폴더를 선택하세요", initialdir=r"c:/dev")
     
     def Merge(self, df, lists):
         df = pd.DataFrame(data=None)
+        header = []
         
         for f in lists:
             with open(f, 'rb') as _file:
                 execute = os.path.splitext(f)[1]
                 encoding = chardet.detect(_file.read(1024)).get('encoding')
-                
+
                 if execute == ".csv":
                     df = (pd.read_csv(f, encoding=encoding) for f in lists)
                 elif execute == ".xlsx" or execute == ".xls":
@@ -37,4 +41,7 @@ class DataMgr:
                 else:
                     pass
                 
-        return (pd.concat(df, ignore_index=True))
+        df = (pd.concat(df, ignore_index=True))
+        header = df.columns
+        
+        return df, header
