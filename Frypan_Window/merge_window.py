@@ -109,7 +109,7 @@ class MergeWindow:
         file_header_btn_select.pack(side=tk.LEFT)
         file_header_btn_deselect = tk.Button(self.file_header_lfm, text="전체해제", command=lambda:self.df_select_header_all(0))
         file_header_btn_deselect.pack(side=tk.LEFT)
-        file_header_btn_refresh = tk.Button(self.file_header_lfm, text="데이터 갱신", command=lambda:self.df_select_refresh(self.df_header_return))
+        file_header_btn_refresh = tk.Button(self.file_header_lfm, text="데이터 갱신", command=lambda:threading.Thread(target=self.df_select_refresh(self.df_header_return)).start())
         file_header_btn_refresh.pack(side=tk.LEFT)
         
         self.file_header_fm = tk.Frame(self.frm_merge)
@@ -248,8 +248,6 @@ class MergeWindow:
             if self._chk_var[tag].get():
                 self.df_header_return.append(self.df_header[tag])
             tag += 1
-            
-        # print(self.df_header_return)
         
     def df_select_header_click(self, i, header):
         self.df_header_return = []
