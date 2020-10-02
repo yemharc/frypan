@@ -4,5 +4,7 @@ build
 build/*
 dist
 dist/*
+output
+output/*
 
 settings.json
