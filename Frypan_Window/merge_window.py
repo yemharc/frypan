@@ -137,6 +137,8 @@ class MergeWindow:
         self.df_merge = pd.DataFrame(data=None)
         
         if self.file_listbox_lb.size() == 0:
+            self.df_header = []
+            self.df_select_refresh(self.df_header)
             self.file_control_btn_merge_file.config(state=tk.DISABLED)
             
     def dest_files(self):
@@ -258,10 +260,14 @@ class MergeWindow:
                 self.df_header_return.append(self.df_header[tag])
             tag += 1
             
-        print(self.df_header_return)
-        
     def df_select_refresh(self, header):
         self.df_current = pd.DataFrame(data=None, columns=header)
+        
+        if len(self.file_header_fm.winfo_children()) > 0:
+            for child in self.file_header_fm.winfo_children():
+                child.destroy()
+            self.df_select_header(self.file_header_fm, self.df_header)
+            
         for col in header:
             self.df_current[col] = self.df_merge[col].values
             
