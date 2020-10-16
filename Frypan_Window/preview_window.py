@@ -13,7 +13,7 @@ class Preview:
         self.window = tk.Toplevel(root, name=name)
         self.window.title(title)
         window_control.CenterScreen(self.window, w_width, w_height)
-        self.window.grab_set()
+        # self.window.grab_set()
         self.window.focus_set()
         
     def __del__(self):

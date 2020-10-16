@@ -29,26 +29,16 @@ class DataMgr:
             os.mkdir(self.dest)
         return fdig.askdirectory(title="폴더를 선택하세요", initialdir=self.dest)
     
-    def Merge(self, df, lists):
-        df = pd.DataFrame(data=None)
-        header = []
-        
-        for f in lists:
-            with open(f, 'rb') as _file:
-                execute = os.path.splitext(f)[1]
-                encoding = chardet.detect(_file.read(1024)).get('encoding')
+    def GetMaxCols(self, f):
+        data_file_delimiter = ","
+        largest_column_count = 0
+        with open(f, 'r') as temp_f:
+            lines = temp_f.readlines()
 
-                if execute == ".csv":
-                    df = (pd.read_csv(f, encoding=encoding) for f in lists)
-                elif execute == ".xlsx" or execute == ".xls":
-                    print("excel")
-                    df = (pd.read_excel(f, sheet_name=0) for f in lists)
-                elif execute == ".txt":
-                    df = (pd.read_csv(f, encoding=encoding, sep="\s+") for f in lists)
-                else:
-                    pass
-                
-        df = (pd.concat(df, ignore_index=True))
-        header = df.columns
+            for l in lines:
+                column_count = len(l.split(data_file_delimiter)) + 1
+                largest_column_count = column_count if largest_column_count < column_count else largest_column_count
+        temp_f.close()
         
-        return df, header
+        column_names = [i for i in range(0, largest_column_count)]
+        return column_names

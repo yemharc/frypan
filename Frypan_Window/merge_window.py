@@ -3,8 +3,10 @@ import tkinter.ttk as ttk
 import tkinter.filedialog as fdig
 
 import os
+import platform
 import threading
 import pandas as pd
+import csv
 
 from Frypan_Controllers import window_control
 from Frypan_Controllers import data_control
@@ -22,6 +24,7 @@ class MergeWindow:
         self.frm_merge = tk.Frame(None, padx=self.padx, pady=self.pady)
         self.nb.add(self.frm_merge, text="파일 합치기")
         
+        self.dest = os.getcwd() + '/output'
         self.df_merge = pd.DataFrame(data=None)
         self.df_current = pd.DataFrame(data=None)
         self.df_header = []
@@ -99,22 +102,11 @@ class MergeWindow:
     def file_header(self):
         self.file_header_lfm = tk.LabelFrame(
             self.frm_merge,
-            text="데이터 항목",
+            text="데이터 정렬",
             padx=self.padx,
             pady=self.pady
         )
         self.file_header_lfm.pack(fill=tk.BOTH, ipadx=self.ipadx, ipady=self.ipady)
-        
-        file_header_btn_select = tk.Button(self.file_header_lfm, text="전체선택", command=lambda:self.df_select_header_all(1))
-        file_header_btn_select.pack(side=tk.LEFT)
-        file_header_btn_deselect = tk.Button(self.file_header_lfm, text="전체해제", command=lambda:self.df_select_header_all(0))
-        file_header_btn_deselect.pack(side=tk.LEFT)
-        file_header_btn_refresh = tk.Button(self.file_header_lfm, text="데이터 갱신", command=lambda:threading.Thread(target=self.df_select_refresh(self.df_header_return)).start())
-        file_header_btn_refresh.pack(side=tk.LEFT)
-        
-        self.file_header_fm = tk.Frame(self.frm_merge)
-        self.file_header_fm.pack(fill=tk.BOTH, ipadx=self.ipadx, ipady=self.ipady)
-        
         
     # Controllers
     def add_files(self):
@@ -179,13 +171,19 @@ class MergeWindow:
         dm = data_control.DataMgr()
         pop = popup_control.PopUp()
         list_to_files = self.file_listbox_lb.get(0, tk.END)
+        
         try:
-            self.df_merge, self.df_header = dm.Merge(self.df_merge, list_to_files)
-            # print(self.df_merge)
-            print(self.df_header)
-            self.df_select_header(self.file_header_fm, self.df_header)
-            self.df_select_refresh(self.df_header)
+            out_file = self.dest + '/out.csv'
+            if platform.system() == 'Windows':
+                cmd_list = ' + '.join(list_to_files)
+                cmd = 'copy ' + cmd_list + ' ' + out_file
+                os.system(cmd.replace('/', '\\'))
+            else:
+                cmd_list = ' '.join(list_to_files)
+                cmd = 'cat ' + cmd_list + ' > ' + out_file
+                os.system(cmd.replace('\\', '/'))
             
+            self.df_merge = pd.read_csv(out_file, sep=',', encoding="euc-kr", header=None, names=dm.GetMaxCols(out_file))
             self.file_control_pgbar.complete()
             pop.info("파일 합치기", "작업완료")
         except:
@@ -193,76 +191,77 @@ class MergeWindow:
             
         if pop.get_res():
             self.file_control_pgbar.clear()
+
             
     def preview_files(self):
         preview = preview_window.Preview(self.root, "preview_files", "미리보기", 640, 480)
         preview.df_preview(self.df_current)
         
         
-    def df_select_header(self, frame, header):
-        _df_select_cv = tk.Canvas(frame)
-        sc = tk.Scrollbar(frame, orient=tk.VERTICAL, command=_df_select_cv.yview)
-        _f_header = tk.Frame(_df_select_cv)
+    # def df_select_header(self, frame, header):
+    #     _df_select_cv = tk.Canvas(frame)
+    #     sc = tk.Scrollbar(frame, orient=tk.VERTICAL, command=_df_select_cv.yview)
+    #     _f_header = tk.Frame(_df_select_cv)
         
-        count = 0
-        rows = 1
+    #     count = 0
+    #     rows = 1
         
-        for child in self.df_header:
-            for c in range(3):
-                if count < len(self.df_header):
-                    self._chk_var[count] = tk.IntVar()
-                    _chks = tk.Checkbutton(
-                        _f_header,
-                        text=self.df_header[count],
-                        variable=self._chk_var[count],
-                        command=lambda count=count:self.df_select_header_click(count, self.df_header),
-                        onvalue=1,
-                        offvalue=0
-                        )
+    #     for child in self.df_header:
+    #         for c in range(3):
+    #             if count < len(self.df_header):
+    #                 self._chk_var[count] = tk.IntVar()
+    #                 _chks = tk.Checkbutton(
+    #                     _f_header,
+    #                     text=self.df_header[count],
+    #                     variable=self._chk_var[count],
+    #                     command=lambda count=count:self.df_select_header_click(count, self.df_header),
+    #                     onvalue=1,
+    #                     offvalue=0
+    #                     )
                     
-                    _chks.select()
-                    _chks.grid(column=c, row=rows, sticky=tk.W)
-                    self.df_header_selected.append(_chks)
-                    count += 1
-            rows += 1
+    #                 _chks.select()
+    #                 _chks.grid(column=c, row=rows, sticky=tk.W)
+    #                 self.df_header_selected.append(_chks)
+    #                 count += 1
+    #         rows += 1
         
-        _df_select_cv.create_window(0, 0, anchor=tk.NW, window=_f_header)
-        _df_select_cv.update_idletasks()
-        _df_select_cv.configure(scrollregion=_df_select_cv.bbox(tk.ALL), yscrollcommand=sc.set)
+    #     _df_select_cv.create_window(0, 0, anchor=tk.NW, window=_f_header)
+    #     _df_select_cv.update_idletasks()
+    #     _df_select_cv.configure(scrollregion=_df_select_cv.bbox(tk.ALL), yscrollcommand=sc.set)
         
-        sc.pack(side=tk.RIGHT, fill=tk.Y)
-        _df_select_cv.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+    #     sc.pack(side=tk.RIGHT, fill=tk.Y)
+    #     _df_select_cv.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         
         
-    def df_select_header_all(self, select):
-        self.df_header_return = []
-        tag = 0
+    # def df_select_header_all(self, select):
+    #     self.df_header_return = []
+    #     tag = 0
         
-        for i in self.df_header_selected:
-            if select:
-                i.select()
-            else:
-                i.deselect()
+    #     for i in self.df_header_selected:
+    #         if select:
+    #             i.select()
+    #         else:
+    #             i.deselect()
                 
-        for i in self.df_header_selected:
-            if self._chk_var[tag].get():
-                self.df_header_return.append(self.df_header[tag])
-            tag += 1
+    #     for i in self.df_header_selected:
+    #         if self._chk_var[tag].get():
+    #             self.df_header_return.append(self.df_header[tag])
+    #         tag += 1
         
-    def df_select_header_click(self, i, header):
-        self.df_header_return = []
-        tag = 0
+    # def df_select_header_click(self, i, header):
+    #     self.df_header_return = []
+    #     tag = 0
         
-        for i in self.df_header_selected:
-            if self._chk_var[tag].get():
-                self.df_header_return.append(self.df_header[tag])
-            tag += 1
+    #     for i in self.df_header_selected:
+    #         if self._chk_var[tag].get():
+    #             self.df_header_return.append(self.df_header[tag])
+    #         tag += 1
             
-        print(self.df_header_return)
+    #     print(self.df_header_return)
         
-    def df_select_refresh(self, header):
-        self.df_current = pd.DataFrame(data=None, columns=header)
-        for col in header:
-            self.df_current[col] = self.df_merge[col].values
+    # def df_select_refresh(self, header):
+    #     self.df_current = pd.DataFrame(data=None, columns=header)
+    #     for col in header:
+    #         self.df_current[col] = self.df_merge[col].values
             
-        print(self.df_current)
+    #     print(self.df_current)
