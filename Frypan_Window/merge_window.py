@@ -146,7 +146,7 @@ class MergeWindow:
     def save_files(self):
         pop = popup_control.PopUp()
         
-        if self.df_current.size == 0:
+        if self.df_merge.size == 0:
             pop.error("파일 저장", "저장할 데이터가 없습니다")
         elif len(str(self.file_dest_entry.get())) == 0:
             pop.error("파일 저장", "저장할 경로를 선택하세요")
@@ -157,13 +157,13 @@ class MergeWindow:
             if os.path.isfile(dest):
                 pop.yes_no("파일 저장", "파일을 덮어쓸까요?")
                 if pop.get_res():
-                    self.df_current.to_csv(dest, sep=",", encoding="utf-8-sig", index=False)
+                    self.df_merge.to_csv(dest, sep=",", encoding="euc-kr", index=False)
                     pop.info("파일 저장", "파일을 덮어썼습니다")
                 else:
                     pop.warning("파일 저장", "파일명을 변경하세요")
                     self.file_dest_entry_filename.focus_set()
             else:
-                self.df_current.to_csv(dest, sep=",", encoding="utf-8-sig", index=False)
+                self.df_merge.to_csv(dest, sep=",", encoding="euc-kr", index=False)
                 pop.info("파일 저장", "파일을 저장했습니다")
                 
     def merge_files(self):
@@ -195,7 +195,7 @@ class MergeWindow:
             
     def preview_files(self):
         preview = preview_window.Preview(self.root, "preview_files", "미리보기", 640, 480)
-        preview.df_preview(self.df_current)
+        preview.df_preview(self.df_merge)
         
         
     # def df_select_header(self, frame, header):
