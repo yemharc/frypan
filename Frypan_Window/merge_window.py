@@ -27,11 +27,11 @@ class MergeWindow:
         self.dest = os.getcwd() + '/output'
         self.df_merge = pd.DataFrame(data=None)
         self.df_current = pd.DataFrame(data=None)
-        self.df_header = []
-        self.df_header_selected = []
-        self.df_header_return = []
-        self._chk_df_header = []
-        self._chk_var = dict()
+        # self.df_header = []
+        # self.df_header_selected = []
+        # self.df_header_return = []
+        # self._chk_df_header = []
+        # self._chk_var = dict()
         
         self.file_control()
         self.file_listbox()
