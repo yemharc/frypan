@@ -2,6 +2,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.font as tkfont
 
+import os
+
 from Frypan_Controllers import window_control
 
 from Frypan_Window import menu_window
@@ -35,7 +37,16 @@ class FrypanMain:
         notebook.add(frame3, text="데이터 분석")
         label3 = tk.Label(frame3, text="개발중")
         label3.pack()
-        
+
 root = tk.Tk()
 startapp = FrypanMain(root)
+
+def on_closing():
+    if tk.messagebox.askokcancel("Exit", "프로그램을 종료할까요?"):
+        _file = os.getcwd() + '/output/out.csv'
+        if os.path.isfile(_file):
+            os.remove(_file)
+        root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
